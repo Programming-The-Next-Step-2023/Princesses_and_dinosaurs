@@ -31,6 +31,20 @@ princes <- bslib::bs_theme(bootswatch = "quartz",
                            "font-size-base" = "1.8rem",
                            "font-size-code" = "1.6rem")
 
+n_hex <- 3
+
+hex_UI <- function(id) {
+  ns <- NS(id)
+  tagList(
+    imageOutput(
+      outputId = ns("hex"),
+      click = clickOpts(id = ns("hex_click"), clip = FALSE),
+      width = 120,
+      height = 139,
+      inline = TRUE
+    )
+  )
+}
 
 # Define UI
 fluidPage(theme = princes,
@@ -69,5 +83,26 @@ fluidPage(theme = princes,
             ),
 
             # Mainpanel for the games
-            (column(9, div(uiOutput("game"))))
+            (column(9,
+            tabsetPanel(
+              shinyjs::useShinyjs(),
+              id = "game_tabs",
+              type = "hidden",
+              tabPanelBody("1",
+                tags$head(
+                  tags$link(href="styles.css", rel="stylesheet", type="text/css")
+                ),
+                tags$div(
+                  class = "title-app",
+                  tags$h4("Hex memory game"),
+                  tags$h4("Find matching hex!")
+                ),
+                lapply(
+                  X = seq_len(n_hex * 2),
+                  FUN = function(x) {
+                    hex_UI(paste0("module", x))
+                  })),
+              tabPanelBody("2", uiOutput("stop_tab")),
+              tabPanelBody("3", uiOutput("nummers_tab")))))
+
           ))

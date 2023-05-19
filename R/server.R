@@ -14,198 +14,58 @@ library(glue)
 # Hex module----
 # Modified from Memory Hex by DreamRs (https://github.com/dreamRs/memory-hex)
 
-n_hex <- 5
+# Hex formula's
+n_hex <- 3
 
-memory_ui <- function(id) {
-  ns <- NS(id)
-  tags$head(
-    tags$link(href="styles.css", rel="stylesheet", type="text/css")
-  )
-  tags$div(
-    class = "title-app",
-    tags$h4("Hex memory game"),
-    tags$h4("Find matching hex!")
-  )
-  lapply(
-    X = seq_len(n_hex * 2),
-    FUN = function(x) {
-      hex_UI(id = ns(paste0("module", x)))
-    }
-  )
+which_show <- function(l, indice = NULL) {
+  l <- filter_found(l)
+  if (length(l) == 0) {
+    return(NULL)
+  }
+  res <- lapply(l, `[[`, "show")
+  res <- unlist(res)
+  if (all(!res)) {
+    return(NULL)
+  }
+  ts <- unlist(lapply(l[res], `[[`, "ts"), use.names = FALSE)
+  res <- names(l)[res]
+  res <- res[order(ts, decreasing = FALSE)]
+  if (is.null(indice)) {
+    res
+  } else {
+    as_null(res[indice])
+  }
 }
 
-
-memory_server <- function(id, theme_memory = "princes_memory", path = "www/hex/") {
-  moduleServer(id,
-               function(input, output, session) {
-                 hex_png <- sample(list.files(path, pattern = "png$"), n_hex)
-                 hex_png <- sample(rep(hex_png, 2))
-                 results_mods <- reactiveValues()
-                 results_mods_parse <- reactiveValues(
-                   all = NULL,
-                   show1 = NULL,
-                   show2 = NULL,
-                   show3 = NULL
-                 )
-                 reset <- reactiveValues(x = NULL)
-                 block <- reactiveValues(x = NULL)
-                 lapply(
-                   X = seq_len(n_hex * 2),
-                   FUN = function(x) {
-                     results_mods[[paste0("module", x)]] <- callModule(
-                       module = hex,
-                       id = ns(paste0("module", x)),
-                       hex_logo = hex_png[x],
-                       reset = reset,
-                       block = block
-                     )
-                   }
-                 )
-                 observe({
-                   res_mod <- lapply(
-                     X = reactiveValuesToList(results_mods),
-                     FUN = reactiveValuesToList
-                   )
-                   results_mods_parse$all <- res_mod
-                   results_mods_parse$show1 <- which_show(res_mod, 1)
-                   results_mods_parse$show2 <- which_show(res_mod, 2)
-                   results_mods_parse$show3 <- which_show(res_mod, 3)
-                 })
-                 observeEvent(results_mods_parse$show2, {
-                   hex1 <- which_hex(results_mods_parse$all, results_mods_parse$show1)
-                   hex2 <- which_hex(results_mods_parse$all, results_mods_parse$show2)
-                   if (identical(hex1, hex2)) {
-                     block$x <- hex1
-                     showNotification(
-                       ui = tags$div(
-                         style = "font-size: 160%; font-weight: bold;",
-                         sample(
-                           x = c(
-                             "Well done!",
-                             "Bravo!",
-                             "Great!",
-                             "Good job!",
-                             "Amazing!",
-                             "That's a match!",
-                             "Hooray!"
-                           ),
-                           size = 1
-                         )
-                       ),
-                       type = "message"
-                     )
-                   }
-                 })
-                 observeEvent(results_mods_parse$show3, {
-                   reset$x <- which_hex(
-                     results_mods_parse$all,
-                     c(results_mods_parse$show1, results_mods_parse$show2)
-                   )
-                   results_mods_parse$show1 <- NULL
-                   results_mods_parse$show2 <- NULL
-                   results_mods_parse$show1 <- results_mods_parse$show3
-                   results_mods_parse$show3 <- NULL
-                 })
-                 observe({
-                   allfound <- all_found(results_mods_parse$all)
-                   if (isTRUE(allfound)) {
-                     showModal(modalDialog(
-                       tags$div(
-                         style = "text-align: center;",
-                         tags$h2(
-                           tags$span(icon("trophy"), style = "color: #F7E32F;"),
-                           "Well done !",
-                           tags$span(icon("trophy"), style = "color: #F7E32F;")
-                         ),
-
-                         tags$br(),
-                         tags$br(),
-                         tags$br(),
-                         tags$br(),
-
-                         actionButton(
-                           inputId = "reload",
-                           label = "Play again !",
-                           style = "width: 100%;"
-                         )
-                       ),
-                       footer = NULL,
-                       easyClose = FALSE
-                     ))
-                   }
-                 })
-
-
-                 observeEvent(input$reload, {
-                   session$reload()
-                 }, ignoreInit = TRUE)
-               }
-  )}
-
-hex_UI <- function(id) {
-  ns <- NS(id)
-  tagList(
-    uiOutput(
-      outputId = ns("hex"),
-      click = clickOpts(id = ns("hex_click"), clip = FALSE),
-      width = 120,
-      height = 139,
-      inline = TRUE
-    )
-  )
+filter_found <- function(l) {
+  found <- unlist(lapply(l, `[[`, "found"), use.names = FALSE)
+  l[!found]
 }
 
+all_found <- function(l) {
+  found <- unlist(lapply(l, `[[`, "found"), use.names = FALSE)
+  all(found)
+}
 
+as_null <- function(x) {
+  if (is.na(x)) {
+    NULL
+  } else {
+    x
+  }
+}
 
+which_hex <- function(l, module) {
+  res <- lapply(module, function(x) l[[x]]$hex)
+  unlist(res, use.names = FALSE)
+}
 
-hex <- function(input, output, session, hex_logo, reset = reactiveValues(x = NULL), block = reactiveValues(x = NULL)) {
+# hex server
+
+hex_server <- function(id, hex_logo, reset = reactiveValues(x = NULL), block = reactiveValues(x = NULL)) {
+  moduleServer(id, function(input, output, session) {
 
   click_status <- reactiveValues(show = FALSE, hex = hex_logo, ts = Sys.time(), found = FALSE)
-
-
-  which_show <- function(l, indice = NULL) {
-    l <- filter_found(l)
-    if (length(l) == 0) {
-      return(NULL)
-    }
-    res <- lapply(l, `[[`, "show")
-    res <- unlist(res)
-    if (all(!res)) {
-      return(NULL)
-    }
-    ts <- unlist(lapply(l[res], `[[`, "ts"), use.names = FALSE)
-    res <- names(l)[res]
-    res <- res[order(ts, decreasing = FALSE)]
-    if (is.null(indice)) {
-      res
-    } else {
-      as_null(res[indice])
-    }
-  }
-
-  filter_found <- function(l) {
-    found <- unlist(lapply(l, `[[`, "found"), use.names = FALSE)
-    l[!found]
-  }
-
-  all_found <- function(l) {
-    found <- unlist(lapply(l, `[[`, "found"), use.names = FALSE)
-    all(found)
-  }
-
-  as_null <- function(x) {
-    if (is.na(x)) {
-      NULL
-    } else {
-      x
-    }
-  }
-
-  which_hex <- function(l, module) {
-    res <- lapply(module, function(x) l[[x]]$hex)
-    unlist(res, use.names = FALSE)
-  }
-
 
   observeEvent(input$hex_click, {
     if (!click_status$found) {
@@ -245,7 +105,8 @@ hex <- function(input, output, session, hex_logo, reset = reactiveValues(x = NUL
   }, deleteFile = FALSE)
 
   return(click_status)
-}
+  }
+)}
 
 
 #------------------------------------------------------------------------------------
@@ -254,7 +115,6 @@ hex <- function(input, output, session, hex_logo, reset = reactiveValues(x = NUL
 
 # Create UI for the games----
 
-memory_dino <-  NULL
 
 dino_stop <- img(src = "dino_walk.gif", height="200%", width="200%")
 princes_stop <- img(src = "elsa_walk_g.gif")
@@ -363,8 +223,7 @@ server <- function(input, output, session) {
 
   # Logic to change the main panel to the selected game----  NOT WORKING
 
-  game_type <- reactiveValues(memory_game = memory_ui("princes"),
-                              memory_id = "princes",
+  game_type <- reactiveValues(memory_id = "princes",
                               memory_theme = "princes",
                               stop_game = princes_stop)
 
@@ -383,21 +242,117 @@ server <- function(input, output, session) {
   })
 
 
-  # Select output
-  output$game <- reactive({switch (input$game_choice,
-                                   "1" = renderUI({memory_ui(game_type$memory_id)},outputArgs = list(container = tags$div, fill="container")),
-                                   "2" = renderUI({game_type$stop_game}),
-                                   "3" = NULL
-  )
-  })
-  # Run matching module server
-  game_server <- reactive({switch (input$game_choice,
-                                   "1" = memory_server(game_type$memory_id, theme_memory = game_type$memory_theme, path  = "www/hex/"),
-                                   "2" = NULL,
-                                   "3" = NULL)
+
+  # select tabppanel
+  observeEvent(input$game_choice, {
+    updateTabsetPanel(inputId = "game_tabs", selected = input$game_choice)
   })
 
-  game_server
+  output$stop_tab <- renderUI({game_type$stop_game})
+  output$nummers_tab <- renderUI("test")
 
+    hex_png <- sample(list.files(path = "www/hex/", pattern = "png$"), n_hex)
+    hex_png <- sample(rep(hex_png, 2))
+    results_mods <- reactiveValues()
+    results_mods_parse <- reactiveValues(
+      all = NULL,
+      show1 = NULL,
+      show2 = NULL,
+      show3 = NULL)
+    reset <- reactiveValues(x = NULL)
+    block <- reactiveValues(x = NULL)
+    lapply(
+      X = seq_len(n_hex * 2),
+      FUN = function(x) {
+        results_mods[[paste0("module", x)]] <- hex_server(
+          id = (paste0("module", x)),
+          hex_logo = hex_png[x],
+          reset = reset,
+          block = block
+        )
+      }
+    )
+
+    observe({
+      res_mod <- lapply(
+        X = reactiveValuesToList(results_mods),
+        FUN = reactiveValuesToList
+      )
+      results_mods_parse$all <- res_mod
+      results_mods_parse$show1 <- which_show(res_mod, 1)
+      results_mods_parse$show2 <- which_show(res_mod, 2)
+      results_mods_parse$show3 <- which_show(res_mod, 3)
+    })
+
+    observeEvent(results_mods_parse$show2, {
+      hex1 <- which_hex(results_mods_parse$all, results_mods_parse$show1)
+      hex2 <- which_hex(results_mods_parse$all, results_mods_parse$show2)
+      if (identical(hex1, hex2)) {
+        block$x <- hex1
+        showNotification(
+          ui = tags$div(
+            style = "font-size: 160%; font-weight: bold;",
+            sample(
+              x = c(
+                "Well done!",
+                "Bravo!",
+                "Great!",
+                "Good job!",
+                "Amazing!",
+                "That's a match!",
+                "Hooray!"
+              ),
+              size = 1
+            )
+          ),
+          type = "message"
+        )
+      }
+    })
+
+    observeEvent(results_mods_parse$show3, {
+      reset$x <- which_hex(
+        results_mods_parse$all,
+        c(results_mods_parse$show1, results_mods_parse$show2)
+      )
+      results_mods_parse$show1 <- NULL
+      results_mods_parse$show2 <- NULL
+      results_mods_parse$show1 <- results_mods_parse$show3
+      results_mods_parse$show3 <- NULL
+    })
+
+    observe({
+      allfound <- all_found(results_mods_parse$all)
+      if (isTRUE(allfound)) {
+        showModal(modalDialog(
+          tags$div(
+            style = "text-align: center;",
+            tags$h2(
+              tags$span(icon("trophy"), style = "color: #F7E32F;"),
+              "Well done !",
+              tags$span(icon("trophy"), style = "color: #F7E32F;")
+            ),
+
+            tags$br(),
+            tags$br(),
+            tags$br(),
+            tags$br(),
+
+            actionButton(
+              inputId = "reload",
+              label = "Play again !",
+              style = "width: 100%;"
+            )
+          ),
+          footer = NULL,
+          easyClose = FALSE
+        ))
+      }
+    })
+
+
+    eventReactive(input$reload, {
+      shinyjs::reset("game_tabs")
+    })
 }
 
