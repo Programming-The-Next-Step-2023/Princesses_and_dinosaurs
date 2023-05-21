@@ -7,7 +7,7 @@
 #    http://shiny.rstudio.com/
 #
 
-
+# This is the memory game for the Princesses and Dinosaurs shiny app
 
 # Based on Memory Hex by DreamRs (https://github.com/dreamRs/memory-hex)
 
@@ -66,10 +66,10 @@ hex_UI <- function(id) {
   ns <- NS(id)
   tagList(
     imageOutput(
-      outputId = ns("hex"), 
+      outputId = ns("hex"),
       click = clickOpts(id = ns("hex_click"), clip = FALSE),
-      width = 120, 
-      height = 139, 
+      width = 120,
+      height = 139,
       inline = TRUE
     )
   )
@@ -77,46 +77,46 @@ hex_UI <- function(id) {
 
 # module server
 hex <- function(input, output, session, hex_logo, reset = reactiveValues(x = NULL), block = reactiveValues(x = NULL)) {
-  
+
   click_status <- reactiveValues(show = FALSE, hex = hex_logo, ts = Sys.time(), found = FALSE)
-  
+
   observeEvent(input$hex_click, {
     if (!click_status$found) {
       click_status$show <- !click_status$show
       click_status$ts <- Sys.time()
     }
   })
-  
+
   observeEvent(block$x, {
     if (hex_logo %in% block$x) {
       click_status$found <- TRUE
     }
   })
-  
+
   observeEvent(reset$x, {
     if (hex_logo %in% reset$x & !click_status$found) {
       click_status$show <- FALSE
     }
   })
-  
+
   output$hex <- renderImage({
     if (!click_status$show) {
       list(
-        src = "www/rstats-hex.png", 
-        width = 120, 
-        height = 139, 
+        src = "www/rstats-hex.png",
+        width = 120,
+        height = 139,
         contentType = "image/png"
       )
     } else {
       list(
-        src = paste0("www/hex/", hex_logo), 
-        width = 120, 
-        height = 139, 
+        src = paste0("www/hex/", hex_logo),
+        width = 120,
+        height = 139,
         contentType = "image/png"
       )
     }
   }, deleteFile = FALSE)
-  
+
   return(click_status)
 }
 
@@ -125,16 +125,16 @@ UI <- fluidPage(
     tags$head(
       tags$link(href="styles.css", rel="stylesheet", type="text/css")
     ),
-    
+
     tags$div(
       class = "title-app",
       tags$h1("Hex memory game"),
       tags$h4("Find matching hex!")
     ),
     tags$br(),
-    
+
     # verbatimTextOutput("test_res_show"),
-    
+
   tags$div(
     style = "width: 650px; margin: auto;",
     tags$br(),
@@ -144,25 +144,25 @@ UI <- fluidPage(
         hex_UI(id = paste0("module", x))
       }
     )
-  ) 
+  )
 )
-    
-  
+
+
 
 
 
 server <- function(input, output, session) {
- 
+
 
 
     hex_png <- sample(list.files(path = "www/hex/", pattern = "png$"), n_hex)
     hex_png <- sample(rep(hex_png, 2))
-    
+
     results_mods <- reactiveValues()
     results_mods_parse <- reactiveValues(all = NULL, show1 = NULL, show2 = NULL, show3 = NULL)
     reset <- reactiveValues(x = NULL)
     block <- reactiveValues(x = NULL)
-  
+
   lapply(
     X = seq_len(n_hex * 2),
     FUN = function(x) {
@@ -175,10 +175,10 @@ server <- function(input, output, session) {
       )
     }
   )
-  
+
   observe({
     res_mod <- lapply(
-      X = reactiveValuesToList(results_mods), 
+      X = reactiveValuesToList(results_mods),
       FUN = reactiveValuesToList
     )
     results_mods_parse$all <- res_mod
@@ -186,7 +186,7 @@ server <- function(input, output, session) {
     results_mods_parse$show2 <- which_show(res_mod, 2)
     results_mods_parse$show3 <- which_show(res_mod, 3)
   })
-  
+
   observeEvent(results_mods_parse$show2, {
     hex1 <- which_hex(results_mods_parse$all, results_mods_parse$show1)
     hex2 <- which_hex(results_mods_parse$all, results_mods_parse$show2)
@@ -196,7 +196,7 @@ server <- function(input, output, session) {
         ui = tags$div(
           style = "font-size: 160%; font-weight: bold;",
           sample(
-            x = c("Well done!", "Bravo!", "Great!", "Good job!", 
+            x = c("Well done!", "Bravo!", "Great!", "Good job!",
                   "Amazing!", "That's a match!", "Hooray!"),
             size = 1
           )
@@ -204,7 +204,7 @@ server <- function(input, output, session) {
       )
     }
   })
-  
+
   observeEvent(results_mods_parse$show3, {
     reset$x <- which_hex(
       results_mods_parse$all,
@@ -215,8 +215,8 @@ server <- function(input, output, session) {
     results_mods_parse$show1 <- results_mods_parse$show3
     results_mods_parse$show3 <- NULL
   })
-  
-  
+
+
   observe({
     allfound <- all_found(results_mods_parse$all)
     if (isTRUE(allfound)) {
@@ -228,10 +228,10 @@ server <- function(input, output, session) {
             "Well done !",
             tags$span(icon("trophy"), style = "color: #F7E32F;")
           ),
-          
+
           tags$br(), tags$br(),
           tags$br(), tags$br(),
-          
+
           actionButton(
             inputId = "reload",
             label = "Play again !",
@@ -243,15 +243,15 @@ server <- function(input, output, session) {
       ))
     }
   })
-  
-  
+
+
   observeEvent(input$reload, {
     session$reload()
   }, ignoreInit = TRUE)
-  
-  
-  
-  
+
+
+
+
 }
 
 shinyApp(UI,server)
