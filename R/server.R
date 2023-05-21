@@ -8,7 +8,6 @@
 #
 
 library(shiny)
-library(glue)
 
 
 # Hex module----
