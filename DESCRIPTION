@@ -2,14 +2,21 @@ Package: shinygame
 Type: Package
 Title: Princesses and Dinosaurs
 Version: 0.1.0
-Author: Marlies
-Maintainer: Marlies
+Authors@R: 
+    person("Marlies", "Roozendaal", ,"this_is_a_fake_adres@gmail.com" ,role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: A shiny app with games for children that are fun and (maybe) teach 
     some valuable lessons too!
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
+Roxygen: list(markdown = TRUE)
 Suggests: 
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+Imports:
+  shiny
+VignetteBuilder: knitr
