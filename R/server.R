@@ -7,14 +7,17 @@
 #    http://shiny.rstudio.com/
 #
 
+
 library(shiny)
+
+#'@import shiny
 
 
 # Hex module----
 # Modified from Memory Hex by DreamRs (https://github.com/dreamRs/memory-hex)
 
 # Hex formula's
-n_hex <- 3
+n_hex <- 1
 
 which_show <- function(l, indice = NULL) {
   l <- filter_found(l)
@@ -112,40 +115,61 @@ hex_server <- function(id, hex_logo, reset = reactiveValues(x = NULL), block = r
 
 
 
-# Create UI for the games----
+# Define UI----
 
+# princess_ui <- list(main_theme,
+#                  gamebtn
+#                  groupbtn)
+#
+# dino_ui <- list(main_theme,
+#                     gamebtn
+#                     groupbtn)
 
 dino_stop <- img(src = "dino_walk.gif", height="200%", width="200%")
-princes_stop <- img(src = "elsa_walk_g.gif")
+princess_stop <- img(src = "elsa_walk_g.gif")
 
 
 # Create html for ui
-princes <- bslib::bs_theme(bootswatch = "quartz",
-                           base_font = '"Verdana", sans-serif',
-                           code_font = '"Verdana", sans-serif',
-                           "font-size-base" = "1.8rem",
-                           "font-size-code" = "1.6rem")
+princess_ <- bslib::bs_theme(bootswatch = "quartz",
+                             base_font = '"Verdana", sans-serif',
+                             code_font = '"Verdana", sans-serif',
+                             "font-size-base" = "1.8rem",
+                             "font-size-code" = "1.6rem")
 
-princes_gamebtn <- tags$style(
-  HTML(".btn {
-    height: 180px;
-    width: 180px;
-    border: 5px solid #FFB6C1;
-    margin-bottom: 30px;
-    justify-self: center;
-    align-self: center;
-    direction: vertical;
-    display: flex;}"))
+princess_theme <-
+  bslib::bs_add_rules(princess_,
+                      "body {
+                        background-image:linear-gradient(#9987BE, #E3A5D7, #F4D1DA);
+                        background-size: contain;
+                        background-position: center;
+                        min-height: 100vh;
+                        width:100%;}")
 
-princes_groupbtn <- tags$head(
+
+princess_gamebtn <- tags$style(HTML(
+                      "btn-custom-class {
+                        height: 180px;
+                        width: 180px;
+                        border: 5px solid #FFB6C1;
+                        margin-bottom: 60px;
+                        justify-objects: center;
+                        align-objects: center;
+                        flex-direction: column;
+                        display: flex;
+       }"
+)
+)
+
+princess_groupbtn <- tags$head(
   tags$style(HTML(
     ".btn-with-image {
                 background: url('knopthema.png') no-repeat center center;
                 background-size: contain;
-                width: 60px;
-                height: 60px;
+                width: 160px;
+                height: 160px;
                 border-radius: 50%;
                 font-size: 18px;
+                margin-top: 60px;
                 line-height: 150px;
                 cursor: pointer;
                 }")))
@@ -159,14 +183,14 @@ dino <- bslib::bs_theme(bootswatch = "sketchy",
                         "font-size-code" = "1.6rem")
 
 dino_gamebtn <- tags$style(
-  HTML(".btn {
+  HTML("btn-custom-class {
     height: 170px;
     width: 170px;
     border: 8px solid #1F8A70;
     margin-bottom: 10px;
     justify-objects: center;
     align-objects: center;
-    direction: vertical;
+    flex-direction: column;
     display: flex;
        }"
   )
@@ -177,41 +201,58 @@ dino_groupbtn <- tags$head(
     ".btn-with-image {
                 background: url('knopthema.png') no-repeat center center;
                 background-size: contain;
-                width: 60px;
-                height: 60px;
+                width: 160px;
+                height: 160px;
                 border-radius: 50%;
                 font-size: 18px;
+                margin-top: 60px;
                 line-height: 150px;
                 cursor: pointer;
-                }"
-  ))
-)
+                }")))
+
+initialize_results_mod <- function(results_mods, n_hex, block, reset) {
+  # ?system.file
+  path <- "www/hex/"
+  hex_png <- sample(list.files(path = path, pattern = "png$"), n_hex)
+  hex_png <- sample(rep(hex_png, 2))
+  lapply(
+    X = seq_len(n_hex * 2),
+    FUN = function(x) {
+      results_mods[[paste0("module", x)]] <- hex_server(
+        id = (paste0("module", x)),
+        hex_logo = hex_png[x],
+        reset = reset,
+        block = block
+      )
+    }
+  )
+}
 
 
 # Define server----
 server <- function(input, output, session) {
 
   # create reactive values needed to change theme
-  set_theme <- reactiveValues(theme_val = princes,
-                              game_btn = princes_gamebtn,
-                              group_btn = princes_groupbtn)
+  set_theme <- reactiveValues(theme_val = princess_theme,
+                              game_btn = princess_gamebtn,
+                              group_btn = princess_groupbtn)
 
   # Set values for ui to start the app
-  session$setCurrentTheme(princes)
-  output$game_btn <- renderUI({princes_gamebtn})
-  output$group_btn <- renderUI({princes_groupbtn})
+  #session$setCurrentTheme(princess_theme)
+  output$game_btn <- renderUI({princess_gamebtn})
+  output$group_btn <- renderUI({princess_groupbtn})
 
 
   # change theme values when change button is clicked
   observeEvent(input$theme_change, {
-    if (identical(bslib::bs_current_theme(), princes))   {
+    if (identical(bslib::bs_current_theme(), princess_theme))   {
       set_theme$theme_val <- dino
       set_theme$game_btn <- dino_gamebtn
       set_theme$group_btn <- dino_groupbtn
     } else {
-      set_theme$theme_val <- princes
-      set_theme$game_btn <- princes_gamebtn
-      set_theme$group_btn <- princes_groupbtn
+      set_theme$theme_val <- princess_theme
+      set_theme$game_btn <- princess_gamebtn
+      set_theme$group_btn <- princess_groupbtn
 
     }
     # Change UI to theme
@@ -220,23 +261,23 @@ server <- function(input, output, session) {
     output$group_btn <- renderUI({set_theme$group_btn})
   })
 
-  # Logic to change the main panel to the selected game----  NOT WORKING
+  # Logic to change the main panel to the selected game----
 
-  game_type <- reactiveValues(memory_id = "princes",
-                              memory_theme = "princes",
-                              stop_game = princes_stop)
+  game_type <- reactiveValues(memory_id = "princess",
+                              memory_theme = "princess",
+                              stop_game = princess_stop)
 
 
   # Create output per game
   observeEvent(input$theme_change, {
-    if (identical(bslib::bs_current_theme(), princes))   {
+    if (identical(bslib::bs_current_theme(), princess_theme))   {
       memory_id <- "dinoid"
       memory_theme <- "dino"
       stop_game <- dino_stop
     } else{
-      memory_id <- "princesid"
-      memory_theme <- "princes"
-      stop_game <- princes_stop
+      memory_id <- "princessid"
+      memory_theme <- "princess"
+      stop_game <- princess_stop
     }
   })
 
@@ -248,29 +289,41 @@ server <- function(input, output, session) {
   })
 
   output$stop_tab <- renderUI({game_type$stop_game})
-  output$nummers_tab <- renderUI("test")
 
-    hex_png <- sample(list.files(path = "www/hex/", pattern = "png$"), n_hex)
-    hex_png <- sample(rep(hex_png, 2))
+    # hex_png <- sample(list.files(path = "www/hex/", pattern = "png$"), n_hex)
+    # hex_png <- sample(rep(hex_png, 2))
+    # results_mods <- reactiveValues()
+    # results_mods_parse <- reactiveValues(
+    #   all = NULL,
+    #   show1 = NULL,
+    #   show2 = NULL,
+    #   show3 = NULL)
+    # reset <- reactiveValues(x = NULL)
+    # block <- reactiveValues(x = NULL)
+    # lapply(
+    #   X = seq_len(n_hex * 2),
+    #   FUN = function(x) {
+    #     results_mods[[paste0("module", x)]] <- hex_server(
+    #       id = (paste0("module", x)),
+    #       hex_logo = hex_png[x],
+    #       reset = reset,
+    #       block = block
+    #     )
+    #   }
+    # )
+
+    reset <- reactiveValues(x = NULL)
+    block <- reactiveValues(x = NULL)
     results_mods <- reactiveValues()
     results_mods_parse <- reactiveValues(
       all = NULL,
       show1 = NULL,
       show2 = NULL,
       show3 = NULL)
-    reset <- reactiveValues(x = NULL)
-    block <- reactiveValues(x = NULL)
-    lapply(
-      X = seq_len(n_hex * 2),
-      FUN = function(x) {
-        results_mods[[paste0("module", x)]] <- hex_server(
-          id = (paste0("module", x)),
-          hex_logo = hex_png[x],
-          reset = reset,
-          block = block
-        )
-      }
-    )
+
+    initialize_results_mod(results_mods, n_hex, block, reset)
+
+
 
     observe({
       res_mod <- lapply(
@@ -327,9 +380,8 @@ server <- function(input, output, session) {
           tags$div(
             style = "text-align: center;",
             tags$h2(
-              tags$span(icon("trophy"), style = "color: #F7E32F;"),
-              "Well done !",
-              tags$span(icon("trophy"), style = "color: #F7E32F;")
+              "Goed gedaan!",
+              tags$span(icon("thumbs-up"), style = "color: #F7E32F;")
             ),
 
             tags$br(),
@@ -348,10 +400,8 @@ server <- function(input, output, session) {
         ))
       }
     })
-
-
-    eventReactive(input$reload, {
-      shinyjs::reset("game_tabs")
-    })
+    observeEvent(input$reload, {
+       session$reload()
+    }, ignoreInit = TRUE)
 }
 

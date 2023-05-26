@@ -9,10 +9,10 @@ play_pd(starttheme = "princesses")
 \arguments{
 \item{start_theme}{String character used to make the game start at the given theme.
 Either the full theme name or the abbreviation (i.e. "prin", "dino") is
-valid. Default is princesses.
-
-#' @return No values are returned to R. After the Shiny interface launches
-all values are returned within the Shiny interface itself.}
+valid. Default is princesses.}
+}
+\value{
+No values are returned to R.
 }
 \description{
 Launches the Shiny interface to play Princesses and Dragons
