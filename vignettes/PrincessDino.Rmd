@@ -1,8 +1,8 @@
 ---
-title: "shinygame"
+title: "Princesses and Dinosaurs"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{shinygame}
+  %\VignetteIndexEntry{princess_dino}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -63,10 +63,8 @@ There is a dinosaur walking in the forest. Look, there is another dinosaur! It i
 
 ##### *Your child will learn*
 
--   The meaning of stop
-
+-   The meaning of the word stop
 -   To respect boundaries
-
 -   To practice patience while waiting
 
 ## Princesses and Dinosaurs (Nederlands)
