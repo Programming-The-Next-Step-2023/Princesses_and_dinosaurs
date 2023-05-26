@@ -1,0 +1,121 @@
+---
+title: "shinygame"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{shinygame}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(shinygame)
+```
+
+## Princesses and Dinosaurs (English)
+
+This is an app for young children (2-6 yr.), to play the games Memory or Stop!. There are two theme's to choose from: a princess theme and a dinosaurs theme. The theme can be set from the start, but children can also switch theme's while playing.
+
+This vignette will provide parents examples for explaining the games to a young child and offers fun suggestions to play together!
+
+### Memory
+
+##### *Explanation*
+
+There are cards with pictures of pricessen/dinosaurs. The cards are all face down. You can't see which picture is on it. Turn over two pictures at a time. Do they look the same? Try to remember what they look like. Can you find all the pictures that look the same?
+
+##### *Play together*
+
+-   Take turns on flipping cards, name the pictures you see and name whether they look the same or not. By talking out loud, you model to your child how to play the game and they will think along for themselves.
+-   Count the cards your child flips over: 'one card, two cards!'). Ask them: do they look the same?
+-   Count all the cards together when your child won the game. How many pictures did they find?
+
+##### *Your child will learn to*
+
+-   Train working memory
+-   Wait for their turn while playing together
+-   Work methodological and form a strategy
+
+### Stop!
+
+##### *Explanation*
+
+Tip: *Start the game while talking. The first round is not timed.*
+
+**Princesses:**\
+Elsa is walking in the forest. There is Olaf, he wants to play! Olaf says Stop! Press the button to make Elsa stop. Make sure you stop on time. Lets do it again!
+
+**Dinosaurs**\
+There is a dinosaur walking in the forest. Look, there is another dinosaur! It is his friend! The friend says stop! Press the button to make Elsa stop. Make sure you stop on time. Lets do it again!
+
+##### *Play together*
+
+-   Can your child name the animals in the forest?
+-   While the princes/dinosaur is stopping, ask them: what is that sound they hear? Is it a big clock, of a small clock?
+-   After playing, have a talk about saying stop: Do they sometimes say stop to someone? When? Do children sometimes says stop to them? What should they do when a child says stop?
+-   Play the game in real life and take turns in saying stop
+
+##### *Your child will learn*
+
+-   The meaning of stop
+
+-   To respect boundaries
+
+-   To practice patience while waiting
+
+## Princesses and Dinosaurs (Nederlands)
+
+Dit is een app voor jonge kinderen (2-6 jr.) met de spelletjes Memory en Stop! Er zijn twee thema's om uit te kiezen: een princessen thema of dinosaurussen thema. Het thema kan vanaf het begin worden ingesteld, maar kinderen kunnen ook tijdens het spelen van thema wisselen.
+
+Deze vignette geeft ouders een voorbeelden om de spellen aan een jong kind uit te leggen en biedt leuke suggesties om samen te spelen!
+
+### Memory
+
+##### ***Uitleg***
+
+Er zijn kaartjes met afbeeldingen van pricessen/dinosaurussen. De kaarten liggen allemaal met de afbeelding naar beneden. Je kunt niet zien welke foto erop staat. Draai twee plaatjes tegelijk om. Zien ze er hetzelfde uit? Probeer te onthouden hoe ze eruit zien. Kun jij alle plaatjes vinden die er hetzelfde uitzien?
+
+##### *Samen spelen*
+
+-   Draai om de beurt kaarten om, benoem de plaatjes die je ziet en of ze er hetzelfde uitzien. Door hardop te praten, laat je je kind zien hoe het spel moet worden gespeeld en je kind zal zelf meedenken.
+-   Tel de kaarten die je kind omdraait: 'één kaart, twee kaarten!'. Vraag je kind: zien ze er hetzelfde uit?
+-   Tel alle kaarten bij elkaar wanneer je kind het spel heeft gewonnen. Hoeveel plaatjes hebben ze gevonden?
+
+##### *Leert je kind:*
+
+-   Werkgeheugen trainen
+-   Wachten op zijn/haar beurt terwijl je samen speelt
+-   Methodisch en strategisch werken
+
+### Stop!
+
+##### *Uitleg*
+
+*Tip: Start het spel terwijl je praat. De eerste ronde loopt niet op tijd*
+
+**Prinsessen**\
+Elsa loopt in het bos. Daar is Olaf, hij wil spelen! Olaf zegt Stop! Druk op de knop om Elsa te laten stoppen. Zorg dat je op tijd stopt. Laten we het nog eens doen!
+
+**Dinosaurussen**\
+Er loopt een dinosaurus in het bos. Hij heet Dino. Kijk, daar is nog een dinosaurus. Het is de vriend van Dino. Zijn vriend zegt stop! Druk op de knop om Dino te laten stoppen. Zorg dat je op tijd stopt. Laten we het nog eens doen!
+
+##### Samen spelen
+
+-   Kan jouw kind de dieren in het bos benoemen?
+-   Terwijl de prinsen/dinosaurus stopt, vraag je: wat is dat geluid dat je hoort? Is het een grote klok of een kleine klok?
+-   Praat na het spelen over stop zeggen: zeggen jouw kind weleens stop tegen iemand? Wanneer was dat? Zegt een ander kindje wel eens stop tegen jouw kind? Wat moet je doen als een ander kindje stop zegt?
+-   Speel het spel in het echt en wissel de rollen af.
+
+##### *Leert je kind:*
+
+-   De betekenis van het woord stoppen
+-   Om grenzen te respecteren
+-   Om geduldig te wachten
+
+Er liggen kaartjes met plaatjes van princessen/ dinosaurussen. De kaartjes liggen allemaal met het plaatje naar beneden. Je kunt niet zien welk plaatje erop staat. Draai steeds twee plaatjes om. Zien ze er hetzelfde uit? Probeer goed te onthouden hoe ze eruit zien. Kan jij alle plaatjes vinden die hetzelfde zijn?
