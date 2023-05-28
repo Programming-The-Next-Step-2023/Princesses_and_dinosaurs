@@ -13,6 +13,7 @@ library(shiny)
 #'@import shiny
 
 
+
 # Hex module----
 # Modified from Memory Hex by DreamRs (https://github.com/dreamRs/memory-hex)
 
@@ -125,8 +126,6 @@ hex_server <- function(id, hex_logo, reset = reactiveValues(x = NULL), block = r
 #                     gamebtn
 #                     groupbtn)
 
-dino_stop <- img(src = "dino_walk.gif", height="200%", width="200%")
-princess_stop <- img(src = "elsa_walk_g.gif")
 
 
 # Create html for ui
@@ -210,6 +209,7 @@ dino_groupbtn <- tags$head(
                 cursor: pointer;
                 }")))
 
+
 initialize_results_mod <- function(results_mods, n_hex, block, reset) {
   # ?system.file
   path <- "www/hex/"
@@ -265,7 +265,7 @@ server <- function(input, output, session) {
 
   game_type <- reactiveValues(memory_id = "princess",
                               memory_theme = "princess",
-                              stop_game = princess_stop)
+                              stop_game = "princess_stop")
 
 
   # Create output per game
@@ -273,11 +273,11 @@ server <- function(input, output, session) {
     if (identical(bslib::bs_current_theme(), princess_theme))   {
       memory_id <- "dinoid"
       memory_theme <- "dino"
-      stop_game <- dino_stop
+      stop_game <- "dino_stop"
     } else{
       memory_id <- "princessid"
       memory_theme <- "princess"
-      stop_game <- princess_stop
+      stop_game <- "princess_stop"
     }
   })
 
@@ -288,7 +288,13 @@ server <- function(input, output, session) {
     updateTabsetPanel(inputId = "game_tabs", selected = input$game_choice)
   })
 
-  output$stop_tab <- renderUI({game_type$stop_game})
+  observe({
+    if (identical(input$game_choice, "2")) {
+      stopServer("theme-id")
+    }
+  })
+
+
 
     # hex_png <- sample(list.files(path = "www/hex/", pattern = "png$"), n_hex)
     # hex_png <- sample(rep(hex_png, 2))

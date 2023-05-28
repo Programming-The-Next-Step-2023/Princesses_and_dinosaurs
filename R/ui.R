@@ -10,6 +10,8 @@
 library(shiny)
 
 
+
+
 memory_name = span(class = "d-flex flex-column align-items-center",
                    icon("th", style = "font-size: 7rem;", lib = "glyphicon"),
                    "Memory",
@@ -126,7 +128,9 @@ fluidPage(theme = princess_theme,
                   FUN = function(x) {
                     hex_UI(paste0("module", x))
                   })),
-              tabPanelBody("2", uiOutput("stop_tab")))
+              tabPanelBody("2", stopUI("test-id")
+
+              ))
             ))
 
           )
