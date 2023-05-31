@@ -1,8 +1,18 @@
-.title-app {
-  text-align: center;
-  width: 100%;
-  margin-top: 60px;
+body {
+  min-height: 100%; 
+  width:100%; 
+  position: absolute;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  background: -moz-radial-gradient(circle at center, #F7FBFF, #428bca) fixed;
+  background: -webkit-radial-gradient(circle at center, #F7FBFF, #428bca) fixed;
+  background: -ms-radial-gradient(circle at center, #F7FBFF, #428bca) fixed;
+  background: -o-radial-gradient(circle at center, #F7FBFF, #428bca) fixed;
+  background: radial-gradient(circle at center, #F7FBFF, #428bca) fixed;
 }
+
 
 
 
