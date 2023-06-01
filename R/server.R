@@ -8,7 +8,7 @@
 #
 
 
-library(shiny)
+#library(shiny)
 
 #'@import shiny
 
@@ -33,7 +33,11 @@ memoServer <- function(id,
                                      found = FALSE,
                                      memo = memo_logo)
 
+
+
+
       observeEvent(input$memo_click, {
+        print(str(click_status))
         if (!click_status$found) {
           click_status$show <- !click_status$show
           click_status$ts <- Sys.time()
@@ -61,7 +65,7 @@ memoServer <- function(id,
           )
         } else {
           list(
-            src = paste0("C:/Users/marro/OneDrive - UvA/Studie/Master/Programming/App Package/Princesses_and_dinosaurs/R/www/",theme_memo(),"_m/", memo_logo),
+            src = paste0("www/",theme_memo,"_m/", memo_logo),
             contentType = "image/png",
             width = 200,
             hight = 200
@@ -69,6 +73,7 @@ memoServer <- function(id,
         }
       },
       deleteFile = FALSE)
+      print(click_status)
       return(click_status)
     }
   )
@@ -85,10 +90,17 @@ memoServer <- function(id,
 server <- function(input, output, session) {
 
   # create reactive values needed to change theme
-  set_theme <- reactiveValues(theme_val = princess_theme)
+  set_theme <- reactiveValues(theme_val =
+                               if (getOption("pd_starttheme", "princesses") == "princesses") {
+                                  princess_theme
+                                } else {
+                                 dino_theme
+                                }
+                                )
 
   # Set values for ui to start the app
-  #session$setCurrentTheme(princess_theme)
+  observe({session$setCurrentTheme(set_theme$theme_val)},
+          priority=10)
   output$walking_gif <- renderUI({princess_walking_gif})
   output$stop_now_gif <- renderUI({princess_stop_now_gif})
   output$stopping_img <- renderUI({princess_stopping_img})
@@ -103,7 +115,12 @@ server <- function(input, output, session) {
       output$stopping_img <- renderUI({dino_stopping_img})
       shinyWidgets::updateRadioGroupButtons(inputId = "game_choice",
                                             choiceNames = dino_btn_names,
-                                            choiceValues = btn_values)
+                                            choiceValues = c(3,1,2))
+      memo_theme <- "dino"
+      memo_back <- dino_back
+      for (x in 1:(n_memo*2))  {
+        memo_png[[paste0("nr", x)]] <- dino_png[x]
+    }
     } else {
       set_theme$theme_val <- princess_theme
       output$game_btn <- renderUI({princess_gamebtn})
@@ -112,35 +129,17 @@ server <- function(input, output, session) {
       output$stopping_img <- renderUI({princess_stopping_img})
       shinyWidgets::updateRadioGroupButtons(inputId = "game_choice",
                                             choiceNames = princess_btn_names,
-                                            choiceValues = btn_values)
+                                            choiceValues = c(3,1,2))
+      memo_theme <- "princess"
+      memo_back <- princess_back
+      for (x in 1:(n_memo*2))  {
+        memo_png[[paste0("nr", x)]] <- princess_png[x]
+      }
     }
-
     # Change UI to theme
     session$setCurrentTheme(set_theme$theme_val)
-
-
-
   })
 
-  # # Logic to change the main panel to the selected game----
-  #
-  # game_type <- reactiveValues(memory_id = "princess",
-  #                             memory_theme = "princess",
-  #                             stop_theme = "princess_stop")
-
-
-  # Create output per game
-  observeEvent(input$startmemo, {
-    if (identical(bslib::bs_current_theme(), princess_theme))   {
-      memory_id <- "dinoid"
-      memory_theme <- "dino"
-      stop_theme <- "dino_stop"
-    } else{
-      memory_id <- "princessid"
-      memory_theme <- "princess"
-      stop_theme <- "princess_stop"
-    }
-  })
 
 
 
@@ -419,36 +418,42 @@ server <- function(input, output, session) {
   })
 
 
-# Memory part---------------------
+#Memory part---------------------
 
-  memo_modal <- function () {
-    modalDialog(
-      tags$div(
-        style = "text-align: center;",
-        tags$h3("Stop Elsa optijd!")
-      ),
-      tags$br(), tags$br(),
+  # memo_modal <- function () {
+  #   modalDialog(
+  #     tags$div(
+  #       style = "text-align: center;",
+  #       tags$h3("speel memory")
+  #     ),
+  #     tags$br(), tags$br(),
+  #
+  #     actionButton(
+  #       inputId = "start_memo",
+  #       label = "Start!",
+  #       style = "width: 100%;"),
+  #     footer = NULL,
+  #     easyClose = TRUE
+  #   )}
+  #
+  # observeEvent(input$game_choice, {
+  #   if (input$game_choice == "1") {
+  #   showModal(memo_modal())
+  # }
+  # })
 
-      actionButton(
-        inputId = "start_memo",
-        label = "Start!",
-        style = "width: 100%;"),
-      footer = NULL,
-      easyClose = TRUE
-    )}
 
-  showModal(memo_modal())
+  princess_list <- list.files("princess_m/")
+  print(princess_list)
+  Princess_sample <- sample(princess_list, n_memo)
+  princess_png <- sample(rep(Princess_sample, 2))
 
-  princess_list <- list.files("C:/Users/marro/OneDrive - UvA/Studie/Master/Programming/App Package/Princesses_and_dinosaurs/R/www/princess_m")
-  Princess_sample <- sample(princess_list,n_memo)
-  princess_png <- sample(rep(Princess_sample,2))
-
-  dino_list <- list.files("C:/Users/marro/OneDrive - UvA/Studie/Master/Programming/App Package/Princesses_and_dinosaurs/R/www/dino_m")
+  dino_list <- list.files("dino_m/")
   dino_sample <- sample(dino_list,n_memo)
   dino_png <- sample(rep(dino_sample,2))
 
-  princess_back <- "C:/Users/marro/OneDrive - UvA/Studie/Master/Programming/App Package/Princesses_and_dinosaurs/R/www/princess_back.png"
-  dino_back <- "C:/Users/marro/OneDrive - UvA/Studie/Master/Programming/App Package/Princesses_and_dinosaurs/R/www/dino_back.png"
+  princess_back <- "princess_back.png"
+  dino_back <- "dino_back.png"
 
 
 
@@ -459,41 +464,30 @@ server <- function(input, output, session) {
                                          show1 = NULL,
                                          show2 = NULL,
                                          show3 = NULL)
+
     memo_png <- reactiveValues(x=NULL)
-    theme_memo <- reactiveVal("princess")
+    memo_theme <- reactiveVal("princess")
     memo_back <- reactiveVal(princess_back)
 
-
-
-
     observe({
-      if (identical(bslib::bs_current_theme(), princess_theme)) {
-        theme_memo <- "princess"
-        memo_back <- princess_back
-        for (x in 1:(n_memo*2))  {
-          memo_png[[paste0("nr", x)]] <- princess_png[x]
-        }
-      } else {
-        memo_png <- dino_png
-        theme_memo <- "dino"
-        memo_back <- dino_back
-        for (x in 1:(n_memo*2))  {
-          memo_png[[paste0("nr", x)]] <- dino_png[x]
-        }
+      for (x in 1:(n_memo*2))  {
+      memo_png[[paste0("nr", x)]] <- princess_png[x]
+      print(memo_png[[paste0("nr", x)]])
       }
     })
 
 
-    observeEvent(input$start_memo, {
-      removeModal()
+    observe({
+     # removeModal()
       for (x in 1:(n_memo*2)) {
         results_mods[[paste0("module", x)]] <-
           memoServer(id = paste0("module", x),
                      memo_logo = memo_png[[paste0("nr", x)]],
                      reset = reset,
                      block = block,
-                     theme_memo = theme_memo,
-                     img_back = memo_back())
+                     theme_memo = memo_theme,
+                     img_back = memo_back)
+
       }
     })
 
@@ -570,3 +564,6 @@ server <- function(input, output, session) {
        session$reload()
     }, ignoreInit = TRUE)
 }
+
+
+

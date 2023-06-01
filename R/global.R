@@ -1,6 +1,6 @@
-library(shiny)
+#library(shiny)
 
-source("stop_module.R")
+#source("stop_module.R")
 
 
 
@@ -69,7 +69,17 @@ princess_stopgame_btn = span(class = "d-flex flex-column align-items-center",
                    border: 5px solid #FFB6C1;
                    margin-bottom: 60px;")
 
-princess_btn_names = list(princess_memorygame_btn, princess_stopgame_btn)
+princess_home_btn = span(class = "d-flex flex-column align-items-center",
+                         icon("hand-paper", style = "font-size: 7rem;"),
+                         "Home!",
+                         style = "height: 180px;
+                             width: 180px;
+                             border: 5px solid #FFB6C1;
+                             margin-bottom: 60px;")
+
+princess_btn_names = list(princess_home_btn, princess_memorygame_btn, princess_stopgame_btn)
+
+
 
 
 
@@ -111,8 +121,16 @@ dino_stopgame_btn = span(class = "d-flex flex-column align-items-center",
                              border: 5px solid #1F8A70;
                              margin-bottom: 60px;")
 
-dino_btn_names = list(dino_memorygame_btn, dino_stopgame_btn)
-btn_values = c(1,2)
+dino_home_btn = span(class = "d-flex flex-column align-items-center",
+                     icon("hand-paper", style = "font-size: 7rem;"),
+                     "Stop!",
+                     style = "height: 180px;
+                             width: 180px;
+                             border: 5px solid #1F8A70;
+                             margin-bottom: 60px;")
+
+dino_btn_names = list(dino_home_btn, dino_memorygame_btn, dino_stopgame_btn)
+btn_values = c("start", 1, 2)
 
 
 

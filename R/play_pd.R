@@ -19,6 +19,8 @@
 #' @export
 play_pd <-
   function(starttheme = "princesses") {
-  shiny::shinyApp(server, ui, starttheme)
+    #?match.arg
+    options("pd_starttheme" = starttheme)
+  shiny::shinyApp(ui, server)
 }
 

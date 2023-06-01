@@ -48,7 +48,7 @@ memoUI <- function(id) {
 
 
 # Define UI
-fluidPage(theme = princess_theme,
+ui <- fluidPage(theme = princess_theme,
 
           # Header
           fluidRow(
@@ -103,12 +103,11 @@ fluidPage(theme = princess_theme,
 
               # Tab for Memory
               tabPanelBody(
+                value = "start",
+               "kies een spel"),
+              tabPanelBody(
                 value = "1",
-                tags$head(
-                  tags$link(href="styles.css", rel="stylesheet", type="text/css")
-                )
-                ,
-                lapply(
+                 lapply(
                   X = seq_len(n_memo * 2),
                   FUN = function(x) {
                     memoUI(paste0("module", x))
@@ -117,6 +116,7 @@ fluidPage(theme = princess_theme,
               # Tab for Stop!
               tabPanelBody(
                 value = "2",
+                #suppressWarnings( # to silence tabpanel
                 tabsetPanel(id = "stop_tabs",
                             type = "hidden",
                             tags$style(
@@ -155,6 +155,7 @@ fluidPage(theme = princess_theme,
                                          border-radius: 50%;
                                          cursor: pointer;"))))
                 )
+                #)
 
 
               ))
