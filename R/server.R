@@ -21,26 +21,18 @@
 server <- function(input, output, session) {
 
   # create reactive values needed to change theme
-  set_theme <- reactiveValues(theme_val =
-                               if (getOption("pd_starttheme", "princesses") == "princesses") {
-                                  princess_theme
-                                } else {
-                                 dino_theme
-                                }
-                                )
-
+  set_theme <- reactiveValues(theme_val = princess_theme
+                              )
 
 
   # Set values for ui to start the app
-  observe({session$setCurrentTheme(set_theme$theme_val)},
-          priority=10)
   output$walking_gif <- renderUI({princess_walking_gif})
   output$stop_now_gif <- renderUI({princess_stop_now_gif})
   output$stopping_img <- renderUI({princess_stopping_img})
 
   memo_png <- list()
-  memo_theme <- reactiveVal("princess_m")
-  memo_back <- reactiveVal(princess_back)
+  memo_theme <- reactiveVal("princess")
+  memo_back <- reactiveVal(get_princess_back())
   for (x in 1:(n_memo*2))  {
     memo_png[[x]] <- reactiveVal(princess_png[x])
   }
@@ -58,7 +50,7 @@ server <- function(input, output, session) {
       output$stopping_img <- renderUI({dino_stopping_img})
 
       memo_theme <- "dino"
-      memo_back <- dino_back
+      memo_back <- get_dino_back()
       for (x in 1:(n_memo*2))  {
         memo_png[[x]] <- dino_png[x]
     }
@@ -73,7 +65,7 @@ server <- function(input, output, session) {
       output$stopping_img <- renderUI({princess_stopping_img})
 
       memo_theme <- "princess"
-      memo_back <- princess_back
+      memo_back <- get_princess_back()
       for (x in 1:(n_memo*2))  {
         memo_png[[x]] <- princess_png[x]
       }
@@ -114,7 +106,6 @@ server <- function(input, output, session) {
     # set time at point of walking
     btn_click$walk_start <- Sys.time()
 
-
     # set walking time (random between 7 and 15 seconds)
     observe({
       if (stopui$walking & btn_click$count_stop == (roundnr-1)){
@@ -131,7 +122,7 @@ server <- function(input, output, session) {
     observe({
       if (btn_click$warning & stopui$stop_now){
         invalidateLater(1000)
-        if (difftime(Sys.time(), btn_click$stop_now_start, units = "secs") > 3) {
+        if (difftime(Sys.time(), btn_click$stop_now_start, units = "secs") > 5) {
           modal_go <- function() {
             modalDialog(
               title = "Druk sneller op de knop",
@@ -156,16 +147,9 @@ server <- function(input, output, session) {
   }
 
   run_stop_now <- function(roundnr) {
-
-    # make character stop
     updateTabsetPanel(inputId = "stop_tabs", selected = "stopping_tab")
-
-    # count number of stops made
     btn_click$count_stop <- btn_click$count_stop + 1
-
-    # set time at point of stopping
     btn_click$stop_start <- Sys.time()
-
     stopui$stop_now <- FALSE
     stopui$stopping <- TRUE
   }
@@ -178,7 +162,6 @@ server <- function(input, output, session) {
         if (difftime(Sys.time(), btn_click$stop_start, units = "secs") > 2) {
           stopui$walking  <- TRUE
           stopui$stopping <- FALSE
-
           updateTabsetPanel(inputId = "stop_tabs", selected = "walk_tab")
           btn_click$count_walk <- btn_click$count_walk + 1
         }}
@@ -187,21 +170,16 @@ server <- function(input, output, session) {
 
   # Show introduction-----
 
-  observe({if (input$game_choice == "2"){
+  observe({if (input$game_choice == "2") {
   showModal(start_modal())
     }
   })
 
   # Begin game by pressing start -----
   observeEvent(input$button_start, {
-
-    # remove start button
-    removeModal()
-
-    # start counting
-    btn_click$count_walk <- btn_click$count_walk + 1
+    removeModal()                                      # remove start button
+    btn_click$count_walk <- btn_click$count_walk + 1   # start counting rounds
     stopui$walking <- TRUE
-
     run_walking(1)
   })
 
@@ -209,26 +187,15 @@ server <- function(input, output, session) {
 
   # stop the princes within time round 1 -----
   observeEvent(input$button_stop, priority = 3, {
-
-
-    # make character stop & remove sign
     updateTabsetPanel(inputId = "stop_tabs", selected = "stopping_tab")
-
-    # count number of stops made
-    btn_click$count_stop <- btn_click$count_stop + 1
-
-
-    # set time at point of stopping
+    btn_click$count_stop <- btn_click$count_stop + 1    # count number of stops
     btn_click$stop_start <- Sys.time()
-
     stopui$stop_now <- FALSE
     stopui$stopping <- TRUE
   })
 
+  # start walking after 5 seconds
   observeEvent(input$button_stop, priority = 2, {
-
-
-    # start walking after 5 seconds
     observe ({
       if (stopui$stopping & btn_click$count_stop == 1) {
         invalidateLater(1000)
@@ -236,7 +203,6 @@ server <- function(input, output, session) {
           btn_click$count_walk <- btn_click$count_walk + 1
           stopui$walking  <- TRUE
           stopui$stopping <- FALSE
-
           updateTabsetPanel(inputId = "stop_tabs", selected = "walk_tab")
         }}
     })
@@ -334,36 +300,7 @@ server <- function(input, output, session) {
   })
 
 
-#Memory part---------------------
-
-  # memo_modal <- function () {
-  #   modalDialog(
-  #     tags$div(
-  #       style = "text-align: center;",
-  #       tags$h3("speel memory")
-  #     ),
-  #     tags$br(), tags$br(),
-  #
-  #     actionButton(
-  #       inputId = "start_memo",
-  #       label = "Start!",
-  #       style = "width: 100%;"),
-  #     footer = NULL,
-  #     easyClose = TRUE
-  #   )}
-  #
-  # observeEvent(input$game_choice, {
-  #   if (input$game_choice == "1") {
-  #   showModal(memo_modal())
-  # }
-  # })
-
-
-
-
-
-
-
+# Memory part---------------------
 
     reset <- reactiveValues(x = NULL)
     block <- reactiveValues(x = NULL)
@@ -376,7 +313,6 @@ server <- function(input, output, session) {
                                             show2 = NULL,
                                             show3 = NULL)
  observe({
-     # removeModal()
       lapply(
         X = seq_len(n_memo * 2),
         FUN = function(x) {
@@ -384,11 +320,16 @@ server <- function(input, output, session) {
             callModule(
             module = memo,
             id = paste0("module", x),
+                    memo_dir <- get_img_dir(),
                      memo_logo = memo_png[[x]](),
                      reset = reset,
                      block = block,
                      theme_memo = memo_theme(),
                      img_back = memo_back())
+        }
+)
+
+})
 
 
 
@@ -438,7 +379,7 @@ server <- function(input, output, session) {
         showModal(memo_win())
       }
     })
-})
+
     observeEvent(input$reload, {
        session$reload()
     }, ignoreInit = TRUE)

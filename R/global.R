@@ -9,20 +9,28 @@ dino_list <- list.files(system.file("img_pd/dino_m", package = "PrincessDino"))
 dino_sample <- sample(dino_list,n_memo)
 dino_png <- sample(rep(dino_sample,2))
 
-princess_back <- ("img_pd/princess_back.png")
-dino_back <- ("img_pd/dino_back.png")
+get_princess_back <- function() {
+  return(system.file("img_pd/princess_back.png", package = "PrincessDino"))
+}
+get_dino_back <- function() {
+  return(system.file("img_pd/dino_back.png", package = "PrincessDino"))
+}
+
+get_img_dir <- function() {
+  return(system.file("img_pd", package = "PrincessDino"))
+}
 
 memo_png <- list()
 
 
 
-princess_walking_gif <- img(src = ("img_pd/elsa_walk.gif"))
-princess_stopping_img <- img(src = ("img_pd/Elsa_from_Disney's_Frozen.png"))
-princess_stop_now_gif <- img(src = ("img_pd/stop_now_elsa.gif"))
+princess_walking_gif <- img(src = ("img_pd/elsa_walk.gif"), hight= "640px", width = "640px")
+princess_stopping_img <- img(src = ("img_pd/Elsa_from_Disney's_Frozen.png"), hight= "640px", width = "640px")
+princess_stop_now_gif <- img(src = ("img_pd/stop_now_elsa.gif"), hight= "640px", width = "640px")
 
-dino_walking_gif <- img(src = ("img_pd/dino_walk.gif"))
-dino_stopping_img <- img(src = ("img_pd/Elsa_from_Disney's_Frozen.png"))
-dino_stop_now_gif <- img(src = ("img_pd/stop_now_dino.gif"))
+dino_walking_gif <- img(src = ("img_pd/dino_walk.gif"), hight= "640px", width = "640px")
+dino_stopping_img <- img(src = ("img_pd/dino_stopped.png"), hight= "640px", width = "640px")
+dino_stop_now_gif <- img(src = ("img_pd/stop_now_dino.gif"), hight= "640px", width = "640px")
 
 btn_img <- img(src = ("img_pd/stop_button.png"), height = "180px", width = "180px")
 
@@ -56,35 +64,6 @@ btn_img <- img(src = ("img_pd/stop_button.png"), height = "180px", width = "180p
       }"
    )
  )
-
-
-#  tags$head(
-#   tags$style(HTML(
-#     '.theme-change-button {
-#       background: url(img_pd/knopthema.png) no-repeat center center;
-#       background-size: contain;
-#       width: 160px;
-#       height: 160px;
-#       border-radius: 50%;
-#       margin-top: 60px;
-#       line-height: 150px;
-#       cursor: pointer;
-#
-#     }
-#
-#     .stop-button {
-#       background: url(img_pd/stop_button.png) no-repeat center center;
-#       background-size: contain;
-#       width: 200px;
-#       height: 200px;
-#       border-radius: 50%;
-#       cursor: pointer;
-#        border: none !important;
-#       box-shadow: none !important;
-#
-#     }')))
-
-
 
 
 princess_ <- bslib::bs_theme(bootswatch = "quartz",
@@ -168,7 +147,12 @@ dino_home_btn = span(class = "d-flex flex-column align-items-center",
 dino_btn_names = list(dino_home_btn, dino_memorygame_btn, dino_stopgame_btn)
 btn_values = c(3, 1, 2)
 
-
+# starttheme =
+#   if (getOption("pd_starttheme", "princesses") == "princesses") {
+#     princess_theme
+#   } else {
+#     dino_theme
+#   }
 
 # Memory--------------
 

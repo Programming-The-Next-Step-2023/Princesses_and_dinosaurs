@@ -14,7 +14,7 @@ library(shiny)
 
 # Define UI
 ui <- fluidPage(
-  theme = princess_theme,
+ theme = princess_theme,
 
   # Header
   fluidRow(

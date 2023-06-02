@@ -1,3 +1,4 @@
+# Dialog
 
 start_modal <- function () {
   modalDialog(
@@ -52,3 +53,6 @@ memo_win <- function () {
     easyClose = FALSE
   )
 }
+
+
+# Memory
