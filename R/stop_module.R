@@ -9,7 +9,7 @@
 # This is the test version of the stop game for the Princesses and Dinosaurs
 # shiny app. It runs as an separate shiny app.
 
-library(shiny)
+#library(shiny)
 
 # create basic UI
 
@@ -31,7 +31,8 @@ stopUI <- function(id) {
                   tabPanel(ns("stopping_tab"), tags$body(stopping_img,
                                                              stop_sign)),
                   tabPanel(ns("stop_now_tab"), tags$body(walking_gif,
-                                                             actionButton(ns("button_stop"), label = "Stop!"))))
+                                                             actionButton(ns("button_stop"),
+                                                                          label = "Stop!"))))
 
 
 
@@ -311,7 +312,6 @@ stopServer <- function(id) {
       })
   }
 )}
-
 
 
 

@@ -1,36 +1,89 @@
-#library(shiny)
-
-#source("stop_module.R")
+n_memo <- 3
 
 
+princess_list <- list.files(system.file("img_pd/princess_m", package = "PrincessDino"))
+Princess_sample <- sample(princess_list, n_memo)
+princess_png <- sample(rep(Princess_sample, 2))
+
+dino_list <- list.files(system.file("img_pd/dino_m", package = "PrincessDino"))
+dino_sample <- sample(dino_list,n_memo)
+dino_png <- sample(rep(dino_sample,2))
+
+princess_back <- ("img_pd/princess_back.png")
+dino_back <- ("img_pd/dino_back.png")
+
+memo_png <- list()
 
 
-princess_walking_gif <- img(src = "elsa_walk.gif")
-princess_stopping_img <- img(src = "Elsa_from_Disney's_Frozen.png")
-princess_stop_now_gif <- img(src = "stop_now_elsa.gif")
 
-dino_walking_gif <- img(src = "dono_walk.gif")
-dino_stopping_img <- img(src = "Elsa_from_Disney's_Frozen.png")
-dino_stop_now_gif <- img(src = "stop_now_dino.gif")
+princess_walking_gif <- img(src = ("img_pd/elsa_walk.gif"))
+princess_stopping_img <- img(src = ("img_pd/Elsa_from_Disney's_Frozen.png"))
+princess_stop_now_gif <- img(src = ("img_pd/stop_now_elsa.gif"))
 
-btn_img <- img(src = "stop_button.png", height = "160px", width = "160px")
+dino_walking_gif <- img(src = ("img_pd/dino_walk.gif"))
+dino_stopping_img <- img(src = ("img_pd/Elsa_from_Disney's_Frozen.png"))
+dino_stop_now_gif <- img(src = ("img_pd/stop_now_dino.gif"))
+
+btn_img <- img(src = ("img_pd/stop_button.png"), height = "180px", width = "180px")
 
 
 
 # Style settings app:
 
-groupbtn <- tags$head(
-  tags$style(HTML(
-    ".btn-with-image {
-                background: url('knopthema.png') no-repeat center center;
-                background-size: contain;
-                width: 160px;
-                height: 160px;
-                border-radius: 50%;
-                margin-top: 60px;
-                line-height: 150px;
-                cursor: pointer;
-                }")))
+ groupbtn <-
+   tags$style(
+   HTML(
+     ".round-button {
+        display: inline-block;
+        border-radius: 50%;
+        cursor: pointer;
+        width: 180px;
+        height: 180px;
+      }
+
+      .theme-change-button {
+        background: url(img_pd/knopthema.png) no-repeat center center;
+        background-size: contain;
+        width: 200px;
+        height: 200px;
+      }
+
+      .stop-button {
+        background: url(img_pd/stop_button.png) no-repeat center center;
+        background-size: contain;
+        width: 180px;
+        height: 180px;
+      }"
+   )
+ )
+
+
+#  tags$head(
+#   tags$style(HTML(
+#     '.theme-change-button {
+#       background: url(img_pd/knopthema.png) no-repeat center center;
+#       background-size: contain;
+#       width: 160px;
+#       height: 160px;
+#       border-radius: 50%;
+#       margin-top: 60px;
+#       line-height: 150px;
+#       cursor: pointer;
+#
+#     }
+#
+#     .stop-button {
+#       background: url(img_pd/stop_button.png) no-repeat center center;
+#       background-size: contain;
+#       width: 200px;
+#       height: 200px;
+#       border-radius: 50%;
+#       cursor: pointer;
+#        border: none !important;
+#       box-shadow: none !important;
+#
+#     }')))
+
 
 
 
@@ -42,7 +95,7 @@ princess_ <- bslib::bs_theme(bootswatch = "quartz",
 princess_theme <-
   bslib::bs_add_rules(princess_,
                       "body {
-                        background-image:linear-gradient(#9987BE, #E3A5D7, #F4D1DA);
+                        background-image:linear-gradient(#9987BE,  #F4D1DA);
                         background-size: contain;
                         background-position: center;
                         min-height: 100vh;
@@ -55,27 +108,24 @@ princess_theme <-
 princess_memorygame_btn = span(class = "d-flex flex-column align-items-center",
                    icon("th", style = "font-size: 7rem;", lib = "glyphicon"),
                    "Memory",
-                   style = "height: 180px;
-                   width: 180px;
-                   border: 5px solid #FFB6C1;
-                   margin-bottom: 60px;")
+                   style = "border: 5px solid #FFB6C1;
+                   cursor: pointer;",
+                   class = "btn btn-sq-responsive")
 
 
 princess_stopgame_btn = span(class = "d-flex flex-column align-items-center",
                  icon("hand-paper", style = "font-size: 7rem;"),
                  "Stop!",
-                 style = "height: 180px;
-                   width: 180px;
-                   border: 5px solid #FFB6C1;
-                   margin-bottom: 60px;")
+                 style = "border: 5px solid #FFB6C1;
+                 cursor: pointer;",
+                 class = "btn btn-sq-responsive")
 
 princess_home_btn = span(class = "d-flex flex-column align-items-center",
-                         icon("hand-paper", style = "font-size: 7rem;"),
-                         "Home!",
-                         style = "height: 180px;
-                             width: 180px;
-                             border: 5px solid #FFB6C1;
-                             margin-bottom: 60px;")
+                         icon("house", style = "font-size: 7rem;"),
+                         "",
+                         style = "border: 5px solid #FFB6C1;
+                                  cursor: pointer;",
+                         class = "btn btn-sq-responsive")
 
 princess_btn_names = list(princess_home_btn, princess_memorygame_btn, princess_stopgame_btn)
 
@@ -91,53 +141,37 @@ dino_theme <- bslib::bs_theme(bootswatch = "sketchy",
                         "font-size-base" = "1.8rem",
                         "font-size-code" = "1.6rem")
 
-dino_game_btn <-tags$style(
-  HTML("game_choice {
-    height: 170px;
-    width: 170px;
-    border: 8px solid #1F8A70;
-    margin-bottom: 10px;
-    justify-objects: center;
-    align-objects: center;
-    flex-direction: column;
-    display: flex;
-       }"
-  ))
 
-dino_memorygame_btn = span(class = "d-flex flex-column align-items-center",
-                               icon("th", style = "font-size: 7rem;", lib = "glyphicon"),
-                               "Memory",
-                               style = "height: 180px;
-                               width: 180px;
-                               border: 5px solid #1F8A70;
-                               margin-bottom: 60px;")
+
+dino_memorygame_btn = span(class = "d-flex flex-column align-items-center btn btn-sq-responsive",
+                           icon("th", style = "font-size: 7rem;", lib = "glyphicon"),
+                           "Memory",
+                           style = "border: 5px solid #1F8A70;
+                                    cursor: pointer;",
+                           class = "btn btn-sq-responsive")
 
 
 dino_stopgame_btn = span(class = "d-flex flex-column align-items-center",
-                             icon("hand-paper", style = "font-size: 7rem;"),
-                             "Stop!",
-                             style = "height: 180px;
-                             width: 180px;
-                             border: 5px solid #1F8A70;
-                             margin-bottom: 60px;")
+                         icon("hand-paper", style = "font-size: 7rem;"),
+                         "Stop!",
+                         style = "border: 5px solid #1F8A70;
+                                  cursor: pointer;",
+                         class = "btn btn-sq-responsive")
 
 dino_home_btn = span(class = "d-flex flex-column align-items-center",
-                     icon("hand-paper", style = "font-size: 7rem;"),
-                     "Stop!",
-                     style = "height: 180px;
-                             width: 180px;
-                             border: 5px solid #1F8A70;
-                             margin-bottom: 60px;")
+                     icon("house", style = "font-size: 7rem;"),
+                     "",
+                     style = "border: 5px solid #1F8A70;
+                              cursor: pointer;",
+                     class = "btn btn-sq-responsive")
 
 dino_btn_names = list(dino_home_btn, dino_memorygame_btn, dino_stopgame_btn)
-btn_values = c("start", 1, 2)
+btn_values = c(3, 1, 2)
 
 
 
 # Memory--------------
 
-n_memo <- 3
-# Images lists:
 
 
 # Functions:

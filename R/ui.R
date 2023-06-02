@@ -12,59 +12,26 @@ library(shiny)
 
 
 
+# Define UI
+ui <- fluidPage(
+  theme = princess_theme,
 
+  # Header
+  fluidRow(
 
-
-# # Create html for ui
-# princess_ <- bslib::bs_theme(bootswatch = "quartz",
-#                              base_font = '"Verdana", sans-serif',
-#                              code_font = '"Verdana", sans-serif',
-#                              "font-size-base" = "1.8rem",
-#                              "font-size-code" = "1.6rem")
-#
-#
-#
-# princess_theme <-
-#   bslib::bs_add_rules(princess_,
-#                       "body {
-#                         background-image:linear-gradient(#9987BE, #E3A5D7, #F4D1DA);
-#                         background-size: contain;
-#                         background-position: center;
-#                         min-height: 100vh;
-#                         width:100%;}")
-
-
-
-memoUI <- function(id) {
-    ns <- NS(id)
-    tagList(
-      imageOutput(
-        outputId = ns("memo"),
-        click = clickOpts(id = ns("memo_click"), clip = FALSE),
-        inline = TRUE
+    # Theme button
+    column(
+      width = 2,
+      offset = 10,
+      tags$div(groupbtn,
+        actionButton(
+          inputId = "theme_change",
+          label = "",
+          class = "round-button theme-change-button"
+        )
       )
     )
-  }
-
-
-# Define UI
-ui <- fluidPage(theme = princess_theme,
-
-          # Header
-          fluidRow(
-
-          # Theme button
-            column(
-              width = 2,
-              offset = 10,
-              groupbtn,
-              actionButton(
-                inputId = "theme_change",
-                label =  "",
-                class = "btn-with-image"
-              )
-            )
-          ),
+  ),
 
           # sidepanel with game options
           sidebarLayout(
@@ -103,15 +70,18 @@ ui <- fluidPage(theme = princess_theme,
 
               # Tab for Memory
               tabPanelBody(
-                value = "start",
+                value = "3",
                "kies een spel"),
+
               tabPanelBody(
                 value = "1",
+                tags$body(
                  lapply(
                   X = seq_len(n_memo * 2),
                   FUN = function(x) {
                     memoUI(paste0("module", x))
-                  })),
+                  }))),
+
 
               # Tab for Stop!
               tabPanelBody(
@@ -124,43 +94,46 @@ ui <- fluidPage(theme = princess_theme,
                                    display: flex;
                                    justify-content: center;
                                     align-items: center;
+                                    width: 70wv;
                                     }
                                    .image-container img {
                                     margin: 5px;}"
                               )
                             ),
                             tabPanelBody("walk_tab",
-                                     tags$body(
-                                       div(
-                                         class = "image-container",
-                                         uiOutput("walking_gif"),
-                                         btn_img))),
+                                         tags$body(
+                                           div(
+                                             class = "image-container",
+                                             uiOutput("walking_gif"),
+                                             btn_img))),
                             tabPanelBody("stopping_tab",
-                                     tags$body(
-                                       div(
-                                         class = "image-container",
-                                         uiOutput("stopping_img"),
-                                         btn_img))),
+                                         tags$body(
+                                           div(
+                                             class = "image-container",
+                                             uiOutput("stopping_img"),
+                                             btn_img))),
                             tabPanelBody("stop_now_tab",
-                                     tags$body(
-                                       div(
-                                         class = "image-container",
-                                         uiOutput("stop_now_gif"),
-                                         actionButton("button_stop",
-                                         label = "",
-                                         style =  "background: url('stop_button.png') no-repeat center center;
-                                         background-size: contain;
-                                         width: 160px;
-                                         height: 160px;
-                                         border-radius: 50%;
-                                         cursor: pointer;"))))
+                                         tags$body(
+                                           div(
+                                             class = "image-container",
+                                             uiOutput("stop_now_gif"),
+                                            tags$div(
+                                              groupbtn,
+                                            actionButton(
+                                              "button_stop",
+                                              label = "",
+                                              class =  "round-button stop-button"
+                                            )
+                                          )
+                                        )
+                                      )
+                                    ),
+                  # ...
                 )
-                #)
-
-
-              ))
-            ))
+              )
+            )
+            )
+          )
 )
-
 
 
