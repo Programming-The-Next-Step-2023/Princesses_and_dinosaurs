@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 library(testthat)
-library(shinygame)
+library(PrincessDino)
 
-test_check("shinygame")
+test_check("PrincessDino")
