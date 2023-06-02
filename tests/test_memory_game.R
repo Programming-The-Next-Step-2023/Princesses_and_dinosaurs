@@ -9,12 +9,12 @@
 
 # This is the memory game for the Princesses and Dinosaurs shiny app
 
-# Based on Memory Hex by DreamRs (https://github.com/dreamRs/memory-hex)
+# Based on Memory memo by DreamRs (https://github.com/dreamRs/memory-memo)
 
 library(shiny)
 
 # global object
-n_hex <- 3
+n_memo <- 3
 
 
 # functions
@@ -56,31 +56,39 @@ as_null <- function(x) {
   }
 }
 
-which_hex <- function(l, module) {
-  res <- lapply(module, function(x) l[[x]]$hex)
+which_memo <- function(l, module) {
+  res <- lapply(module, function(x) l[[x]]$memo)
   unlist(res, use.names = FALSE)
 }
 
 # module UI
-hex_UI <- function(id) {
+memoUI <- function(id) {
   ns <- NS(id)
   tagList(
     imageOutput(
-      outputId = ns("hex"),
-      click = clickOpts(id = ns("hex_click"), clip = FALSE),
-      width = 120,
-      height = 139,
+      outputId = ns("memo"),
+      click = clickOpts(id = ns("memo_click"), clip = FALSE),
       inline = TRUE
     )
   )
 }
 
 # module server
-hex <- function(input, output, session, hex_logo, reset = reactiveValues(x = NULL), block = reactiveValues(x = NULL)) {
+memoServer <- function(id,
+                       memo_logo,
+                       reset,
+                       block,
+                       img_back,
+                       theme_memo){
+  moduleServer(
+    id,
+    function(input, output, session) {
+               click_status <- reactiveValues(show = FALSE,
+                                              ts = Sys.time(),
+                                              found = FALSE,
+                                              memo = memo_logo)
 
-  click_status <- reactiveValues(show = FALSE, hex = hex_logo, ts = Sys.time(), found = FALSE)
-
-  observeEvent(input$hex_click, {
+  observeEvent(input$memo_click, {
     if (!click_status$found) {
       click_status$show <- !click_status$show
       click_status$ts <- Sys.time()
@@ -88,36 +96,39 @@ hex <- function(input, output, session, hex_logo, reset = reactiveValues(x = NUL
   })
 
   observeEvent(block$x, {
-    if (hex_logo %in% block$x) {
+    if (memo_logo %in% block$x) {
       click_status$found <- TRUE
     }
   })
 
   observeEvent(reset$x, {
-    if (hex_logo %in% reset$x & !click_status$found) {
+    if (memo_logo %in% reset$x & !click_status$found) {
       click_status$show <- FALSE
     }
   })
 
-  output$hex <- renderImage({
+  output$memo <- renderImage({
     if (!click_status$show) {
       list(
-        src = "www/rstats-hex.png",
-        width = 120,
-        height = 139,
-        contentType = "image/png"
+        src = img_back,
+        contentType = "image/png",
+        width = 200,
+        hight = 200
       )
     } else {
       list(
-        src = paste0("www/hex/", hex_logo),
-        width = 120,
-        height = 139,
-        contentType = "image/png"
+        src = paste0("C:/Users/marro/OneDrive - UvA/Studie/Master/Programming/App Package/Princesses_and_dinosaurs/R/www/",theme_memo(),"_m/", memo_logo),
+        contentType = "image/png",
+        width = 200,
+        hight = 200
       )
     }
-  }, deleteFile = FALSE)
-
+  },
+  deleteFile = FALSE)
+  print(click_status)
   return(click_status)
+    }
+)
 }
 
 UI <- fluidPage(
@@ -126,22 +137,18 @@ UI <- fluidPage(
       tags$link(href="styles.css", rel="stylesheet", type="text/css")
     ),
 
-    tags$div(
-      class = "title-app",
-      tags$h1("Hex memory game"),
-      tags$h4("Find matching hex!")
-    ),
+    actionButton("theme_change",label = "change theme"),
     tags$br(),
 
-    # verbatimTextOutput("test_res_show"),
+    verbatimTextOutput("test_theme"),
 
   tags$div(
     style = "width: 650px; margin: auto;",
     tags$br(),
     lapply(
-      X = seq_len(n_hex * 2),
+      X = seq_len(n_memo * 2),
       FUN = function(x) {
-        hex_UI(id = paste0("module", x))
+        memoUI(id = paste0("module", x))
       }
     )
   )
@@ -153,28 +160,73 @@ UI <- fluidPage(
 
 server <- function(input, output, session) {
 
+  set_theme <- reactiveValues(theme_val = "princess_theme")
+
+  observeEvent(input$theme_change, {
+    if (identical(set_theme$theme_val, "princess_theme"))   {
+      set_theme$theme_val <- "dino_theme"
+    } else {
+      set_theme$theme_val <- "princess_theme"
+    }
+  })
+
+  output$test_theme <- renderText(set_theme$theme_val)
+
+  memo_theme <- reactiveValues()
+
+  princess_list <- list.files("C:/Users/marro/OneDrive - UvA/Studie/Master/Programming/App Package/Princesses_and_dinosaurs/R/www/princess_m"
+  )
+  Princess_sample <- sample(princess_list,n_memo)
+  princess_png <- sample(rep(Princess_sample,2))
+
+  dino_list <- list.files("C:/Users/marro/OneDrive - UvA/Studie/Master/Programming/App Package/Princesses_and_dinosaurs/R/www/dino_m"
+  )
+  dino_sample <- sample(dino_list,n_memo)
+  dino_png <- sample(rep(dino_sample,2))
 
 
-    hex_png <- sample(list.files(path = "www/hex/", pattern = "png$"), n_hex)
-    hex_png <- sample(rep(hex_png, 2))
+princess_back <- "C:/Users/marro/OneDrive - UvA/Studie/Master/Programming/App Package/Princesses_and_dinosaurs/R/www/princess_back.png"
+dino_back <- "C:/Users/marro/OneDrive - UvA/Studie/Master/Programming/App Package/Princesses_and_dinosaurs/R/www/dino_back.png"
+
 
     results_mods <- reactiveValues()
     results_mods_parse <- reactiveValues(all = NULL, show1 = NULL, show2 = NULL, show3 = NULL)
+
     reset <- reactiveValues(x = NULL)
     block <- reactiveValues(x = NULL)
 
-  lapply(
-    X = seq_len(n_hex * 2),
-    FUN = function(x) {
-      results_mods[[paste0("module", x)]] <- callModule(
-        module = hex,
-        id = paste0("module", x),
-        hex_logo = hex_png[x],
-        reset = reset,
-        block = block
-      )
-    }
-  )
+    memo_png <- reactiveValues(x=NULL)
+    theme_memo <- reactiveVal("princess")
+    memo_back <- reactiveVal(princess_back)
+
+    observe({
+        if (identical(set_theme$theme_val, "princess_theme")){
+          theme_memo <- "princess"
+          memo_back <- princess_back
+          for (x in 1:(n_memo*2))  {
+            memo_png[[paste0("nr", x)]] <- princess_png[x]
+          }
+        } else {
+          memo_png <- dino_png
+          theme_memo <- "dino"
+          memo_back <- dino_back
+          for (x in 1:(n_memo*2))  {
+          memo_png[[paste0("nr", x)]] <- dino_png[x]
+          }
+        }
+    })
+
+    observe({
+      for (X in 1:(n_memo*2)) {
+          results_mods[[paste0("module", X)]] <-
+            memoServer(id = paste0("module", X),
+                       memo_logo = memo_png[[paste0("nr", X)]],
+                       reset = reset,
+                       block = block,
+                       theme_memo = theme_memo,
+                       img_back = memo_back())
+        }
+  })
 
   observe({
     res_mod <- lapply(
@@ -188,10 +240,10 @@ server <- function(input, output, session) {
   })
 
   observeEvent(results_mods_parse$show2, {
-    hex1 <- which_hex(results_mods_parse$all, results_mods_parse$show1)
-    hex2 <- which_hex(results_mods_parse$all, results_mods_parse$show2)
-    if (identical(hex1, hex2)) {
-      block$x <- hex1
+    memo1 <- which_memo(results_mods_parse$all, results_mods_parse$show1)
+    memo2 <- which_memo(results_mods_parse$all, results_mods_parse$show2)
+    if (identical(memo1, memo2)) {
+      block$x <- memo1
       showNotification(
         ui = tags$div(
           style = "font-size: 160%; font-weight: bold;",
@@ -206,7 +258,7 @@ server <- function(input, output, session) {
   })
 
   observeEvent(results_mods_parse$show3, {
-    reset$x <- which_hex(
+    reset$x <- which_memo(
       results_mods_parse$all,
       c(results_mods_parse$show1, results_mods_parse$show2)
     )
