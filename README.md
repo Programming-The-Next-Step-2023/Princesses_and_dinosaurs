@@ -17,7 +17,7 @@ The package is structured with the most important files and directories being:
 *functions.R*: Most functions used in the app, including messages\
 *memo_module.R*: The module for the memory game\
 *zzz.R* : The resource path to the package directory for shiny\
-*server*.R an ui.R: The shiny app R.-scripts
+*server.R* and *ui.R*: The shiny app R.-scripts
 
 ## Play the games
 
