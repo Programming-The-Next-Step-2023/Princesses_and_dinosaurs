@@ -2,7 +2,7 @@
 title: "Princesses and Dinosaurs"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{princess_dino}
+  %\VignetteIndexEntry{PrincessDino}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,20 +15,35 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(shinygame)
+library(PrincessDino)
 ```
 
-## Princesses and Dinosaurs (English)
+## Start app
 
-This is an app for young children (2-6 yr.), to play the games Memory or Stop!. There are two theme's to choose from: a princess theme and a dinosaurs theme. The theme can be set from the start, but children can also switch theme's while playing.
+This is an app for young children (2-6 yr.), to play the games "Memory" or "Stop!". There are two theme's to choose from: a princess theme and a dinosaurs theme, these can be changes while playing.
 
-This vignette will provide parents examples for explaining the games to a young child and offers fun suggestions to play together!
+`play_pd()` will start the shiny app. No additional arguments are needed, the "princess theme" will start as default. In the future, it may be possible to choose your own starting theme with `starttheme`.
+
+## Code structure
+
+The package is structured with the most important files and directories being:
+
+*inst/img_pd*: The directory containing all the images\
+*global.R*: The objects used in the shiny app\
+*functions.R*: Most functions used in the app, including messages\
+*memo_module.R*: The module for the memory game\
+*zzz.R* : The resource path to the package directory for shiny\
+*server*.R an ui.R: The shiny app R.-scripts
+
+## Play Princesses and Dinosaurs (English)
+
+As the games are quite simple, there wont be a standard step-by-step follow trough. Instead, this part of the vignette will provide parents examples for explaining the games to a young child and offers fun suggestions to play together! A dutch version is also provided.
 
 ### Memory
 
 ##### *Explanation*
 
-There are cards with pictures of pricessen/dinosaurs. The cards are all face down. You can't see which picture is on it. Turn over two pictures at a time. Do they look the same? Try to remember what they look like. Can you find all the pictures that look the same?
+There are cards with pictures of pricesses/dinosaurs. The cards are all face down. You can't see which picture is on it. Turn over two pictures at a time. Do they look the same? Try to remember what they look like. Can you find all the pictures that look the same?
 
 ##### *Play together*
 
@@ -67,11 +82,11 @@ There is a dinosaur walking in the forest. Look, there is another dinosaur! It i
 -   To respect boundaries
 -   To practice patience while waiting
 
-## Princesses and Dinosaurs (Nederlands)
+## Speel Princesses and Dinosaurs (Nederlands)
 
-Dit is een app voor jonge kinderen (2-6 jr.) met de spelletjes Memory en Stop! Er zijn twee thema's om uit te kiezen: een princessen thema of dinosaurussen thema. Het thema kan vanaf het begin worden ingesteld, maar kinderen kunnen ook tijdens het spelen van thema wisselen.
+Dit is een app voor jonge kinderen (2-6 jr.) met de spelletjes Memory en Stop! Er zijn twee thema's om uit te kiezen: een princessen thema of dinosaurussen thema. Kinderen kunnen tijdens het spelen van thema wisselen.
 
-Deze vignette geeft ouders een voorbeelden om de spellen aan een jong kind uit te leggen en biedt leuke suggesties om samen te spelen!
+Omdat de spellen vrij eenvoudig zijn, zal er geen uitgebreide stap-voor-stap uitleg. In plaats daarvan geeft deel van de vignette ouders voorbeelden om de spellen aan een jong kind uit te leggen en leuke suggesties om samen te spelen!
 
 ### Memory
 
